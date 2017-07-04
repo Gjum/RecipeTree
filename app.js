@@ -42,12 +42,6 @@ const App = (function(){
       };
     }
 
-    setState(state) {
-      // XXX broken: doesn't update this.state
-      let s=Object.assign(this.state, state);
-      super.setState(state);
-    }
-
     selectItemQuantity(numItem) {
       this.setState({ targetItems: { [getItemKey(numItem)]: numItem, }, });
     }
@@ -57,7 +51,6 @@ const App = (function(){
       // run recipe once
       for (let rcpItem of Object.values(recipe.input || {})) {
         this.addTargetItem(rcpItem);
-        // XXX broken: doesn't update this.state
       }
       for (let rcpItem of Object.values(recipe.output || {})) {
         this.removeTargetItem(rcpItem);
@@ -69,22 +62,20 @@ const App = (function(){
         newState.targetFactories.push(factory);
       }
 
-      this.setState(newState);
+      this.setState(this.state);
     }
 
     addTargetItem(numItem) {
-      // XXX broken: doesn't update this.state
       const newItem = Object.assign({}, numItem);
       const targetItems = Object.assign({}, this.state.targetItems, { [getItemKey(newItem)]: newItem });
       const oldItem = this.state.targetItems[getItemKey(newItem)];
       if (oldItem) {
         newItem.amount += oldItem.amount;
       }
-      this.setState({ targetItems, });
+      this.state.targetItems = targetItems;
     }
 
     removeTargetItem(numItem) {
-      // XXX broken: doesn't update this.state
       const targetItems = Object.assign({}, this.state.targetItems);
       const newItem = Object.assign({}, targetItems[getItemKey(numItem)]);
       newItem.amount -= numItem.amount;
@@ -93,7 +84,7 @@ const App = (function(){
       } else {
         targetItems[getItemKey(newItem)] = newItem;
       }
-      this.setState({ targetItems, });
+      this.state.targetItems = targetItems;
     }
 
     render() {
