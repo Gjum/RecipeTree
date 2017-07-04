@@ -1,0 +1,19 @@
+.obtainItem, .selectQuantity {
+    text-decoration: underline;
+    cursor: pointer;
+    color: blue;
+}
+
+.itemQuantitySelector .quantities li {
+    display: inline;
+    margin-left: 1em;
+}
+
+.factoryList, .quantities {
+    display: inline;
+}
+
+.factoryList li {
+    display: inline;
+    margin-left: 1em;
+}

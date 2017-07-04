@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <link rel="icon" href="favicon.png" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script type="text/babel" src="https://raw.githubusercontent.com/nodeca/js-yaml/master/dist/js-yaml.min.js"></script>
+    <script type="text/babel" src="app.js"></script>
+    <script type="text/babel" src="index.js"></script>
+  </head>
+  <body>
+    <div id="root">
+      Loading...
+    </div>
+    <script type="text/babel">
+      const urlCivClassic = 'https://raw.githubusercontent.com/CivClassic/factorymod/master/src/main/resources/configCivclassic.yml';
+      RecipeView.getUrl(urlCivClassic)
+      .then(data => jsyaml.safeLoad(data, { json: true, filename: "configCivclassic.yml", }))
+      .then(rcp => {
+        const rv = new RecipeView();
+        rv.addRecipeSource(rcp);
+        rv.startApp(document.getElementById('root'));
+      })
+      .catch(e => {
+        console.error(e);
+        document.getElementById('root').innerHTML = `<pre>Error encountered while loading:\n\n${e}</pre>`;
+      })
+    </script>
+  </body>
+</html>
