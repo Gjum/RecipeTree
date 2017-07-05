@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World</title>
+    <title>RecipeTree</title>
     <link rel="icon" href="favicon.png" />
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="https://unpkg.com/react@latest/dist/react.js"></script>
@@ -18,12 +18,12 @@
     </div>
     <script type="text/babel">
       const urlCivClassic = 'https://raw.githubusercontent.com/CivClassic/factorymod/master/src/main/resources/configCivclassic.yml';
-      RecipeView.getUrl(urlCivClassic)
+      RecipeTree.getUrl(urlCivClassic)
       .then(data => jsyaml.safeLoad(data, { json: true, filename: "configCivclassic.yml", }))
       .then(rcp => {
-        const rv = new RecipeView();
-        rv.addRecipeSource(rcp);
-        rv.startApp(document.getElementById('root'));
+        const recipeTree = new RecipeTree();
+        recipeTree.addRecipeSource(rcp);
+        recipeTree.startApp(document.getElementById('root'))
       })
       .catch(e => {
         console.error(e);

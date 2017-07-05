@@ -1,18 +1,18 @@
 {
-  "name": "recipeview",
+  "name": "recipetree",
   "version": "0.0.1",
-  "description": "calculate resources required to run a factorymod recipe",
+  "description": "Calculate resources required to run a FactoryMod recipe",
   "main": "index.js",
   "author": "Gjum",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Gjum/RecipeView.git"
+    "url": "git+https://github.com/Gjum/RecipeTree.git"
   },
   "bugs": {
-    "url": "https://github.com/Gjum/RecipeView/issues"
+    "url": "https://github.com/Gjum/RecipeTree/issues"
   },
-  "homepage": "https://github.com/Gjum/RecipeView#readme",
+  "homepage": "https://github.com/Gjum/RecipeTree#readme",
   "scripts": {
     "test": "mocha"
   },

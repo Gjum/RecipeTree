@@ -1,4 +1,4 @@
-class RecipeView {
+class RecipeTree {
   constructor() {
     this.rcpSources = [];
 

@@ -90,6 +90,8 @@ const App = (function(){
     render() {
       if (!Object.keys(this.state.targetItems).length) {
         return <div>
+          <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
+          <div style={{opacity: .7}}>Calculate resources required to run a FactoryMod recipe</div>
           <h2>Select the number of items you want to obtain:</h2>
           {Object.values(this.props.items).slice().sort((i,j) => i.material > j.material).map(item =>
             <ItemQuantitySelector
