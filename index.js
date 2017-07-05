@@ -33,6 +33,12 @@ class RecipeTree {
       }
       for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
         rcpItem.type = bukkitNames[rcpItem.material];
+        const meta = Math.max(0, rcpItem.durability || 0); // some are -1, some are undefined
+        const itemData = itemNames.find(i => i.type === rcpItem.type && i.meta === meta)
+          || itemNames.find(i => i.type === rcpItem.type);
+        rcpItem.niceName = itemData.name;
+        if (rcpItem.durability === -1)
+          rcpItem.niceName = 'Any ' + rcpItem.niceName;
       }
       for (let rcpItem of Object.values(rcp.output || {})) {
         const itemKey = getItemKey(rcpItem);
