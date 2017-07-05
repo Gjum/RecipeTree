@@ -1,7 +1,13 @@
-.obtainItem, .selectQuantity {
-    text-decoration: underline;
-    cursor: pointer;
-    color: blue;
+@font-face {
+    font-family: minecraft;
+    src: url('Minecraftia-Regular.ttf');
+}
+
+body {
+    font-family: minecraft;
+    font-size: 14px;
+    color: #444;
+    background-color: #c6c6c6;
 }
 
 .itemQuantitySelector .quantities li {
@@ -13,7 +19,40 @@
     display: inline;
 }
 
-.factoryList li {
-    display: inline;
-    margin-left: 1em;
+.mcButton {
+    line-height: 2em;
+    padding: 0 .5em;
+    border: 2px;
+    border-style: solid;
+    border-color: #fff #444 #444 #fff;
+    background-color: #8b8b8b;
+    color: #fff;
+    text-shadow: .13em 0.13em 0 rgba(0,0,0, .5);
+    cursor: pointer;
+}
+
+.mcButton:hover {
+    background-color: #c6c6c6;
+}
+
+.itemIcon {
+    line-height: 1em;
+    padding-top: 18px;
+    width: 32px;
+    height: 1em;
+    margin: 1px;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: .13em 0.13em 0 rgba(0,0,0, .5);
+    text-align: right;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-color: #8b8b8b;
+    border: 2px;
+    border-style: solid;
+    border-color: #444 #fff #fff #444;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }

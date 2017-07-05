@@ -1,35 +1,53 @@
 const getItemKey = item => `${item.type}:${item.durability}:${item.lore ? item.lore[0] : ''}`
 
+const keySort = f => (a,b) => f(a) > f(b) ? 1 : -1
+
 const App = (function(){
+
+  const ItemStack = ({item}) => {
+    let dura = item.durability || 0;
+    if (item.type === 99 || item.type === 100) dura = 0; // only have first mushroom icon
+    if (dura === -1) dura = 0;
+    const imgUrl = `img/${item.type}-${dura}.png`;
+    return <div className='itemIcon' style={{backgroundImage:`url("${imgUrl}")`}}>
+      {item.amount || '999'}
+    </div>
+  }
+
+  const FactorySelector = ({factory, selectFactory}) =>
+    <span className='factorySelector mcButton'
+      onClick={() => selectFactory(factory)}
+    >
+      {factory.name}
+    </span>
 
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
-      material:{item.material} {item.name && `name:${item.name} `}
-      <ul className='quantities'>
+      <ItemStack item={item} />
+      <div className='quantities'>
         {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num =>
-          <li key={num} className='selectQuantity'
-            onClick={() => {
-              selectQuantity(Object.assign(
-                { amount: num, },
-                item,
-              ));
-            }}
+          <span key={num} className='selectQuantity mcButton'
+            onClick={() => selectQuantity(Object.assign({}, item, { amount: num, }))}
           >
-            {num}</li>
+            {num}</span>
         )}
-      </ul>
+      </div>
+      {item.niceName} {item.name && `name:${item.name} `} {item.lore && `lore:${item.lore} `}
     </div>
 
   const ItemQuantityWithFactoryRecipes = ({item, obtainWithRecipeInFactory}) =>
     <div className='itemFromFactoryRecipe'>
-      num:{item.amount} material:{item.material} {item.name && `name:${item.name} `}
+      <ItemStack item={item} />
+      {item.niceName} {item.name && `name:${item.name} `} {item.lore && `lore:${item.lore} `}
       {item.recipeSources &&
-        <ul className='obtainMethods'>
+        <div className='obtainMethods'>
           {item.recipeSources.map(recipe => recipe.inFactories.map(factory =>
-            <li key={recipe.key+factory.name} className='obtainItem' onClick={() => obtainWithRecipeInFactory(item, recipe, factory)}>
-              obtain from {factory.name} with recipe {recipe.name}</li>
+            <span key={recipe.key+factory.name} className='obtainItem mcButton'
+              onClick={() => obtainWithRecipeInFactory(item, recipe, factory)}
+            >
+              obtain from {factory.name} with recipe {recipe.name}</span>
           ))}
-        </ul>
+        </div>
       }
     </div>
 
@@ -39,7 +57,19 @@ const App = (function(){
       this.state = {
         targetItems: {}, // TODO use an immutable Map
         targetFactories: [], // TODO use an immutable Set
+        haveFactories: [], // TODO use an immutable Set
       };
+    }
+
+    selectFactory(factory) {
+      const recipe = Object.values(this.props.recipes).find(r => r.factory === factory.name);
+      for (let rcpItem of Object.values(recipe.input || {})) {
+        this.addTargetItem(rcpItem);
+      }
+      if (!this.state.haveFactories.find(f => f.name === factory.name)) {
+        this.state.haveFactories.push(factory);
+      }
+      this.setState(this.state);
     }
 
     selectItemQuantity(numItem) {
@@ -89,10 +119,18 @@ const App = (function(){
     render() {
       if (!Object.keys(this.state.targetItems).length) {
         return <div>
+          <img src="favicon.png" style={{float: 'left', marginRight: 8, height: '3em'}}/>
           <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
           <div style={{opacity: .7}}>Calculate resources required to run a FactoryMod recipe</div>
-          <h2>Select the number of items you want to obtain:</h2>
-          {Object.values(this.props.items).slice().sort((i,j) => i.material > j.material).map(item =>
+          <h2>Select what you want to obtain:</h2>
+          {Object.values(this.props.factories).slice().sort(keySort(f => f.name)).map(factory =>
+            <FactorySelector
+              factory={factory}
+              selectFactory={factory => this.selectFactory(factory)}
+              key={factory.name}
+            />
+          )}
+          {Object.values(this.props.items).slice().sort(keySort(i => i.niceName)).map(item =>
             <ItemQuantitySelector
               item={item}
               selectQuantity={numItem => this.selectItemQuantity(numItem)}
@@ -103,15 +141,14 @@ const App = (function(){
       }
       return <div>
         Factories required:
-        <ul className='factoryList'>
-          {this.state.targetFactories.slice().sort(/* TODO */).map(f => <li key={f.key}>{f.name}</li>)}
-        </ul>
+        <div className='factoryList'>
+          {this.state.targetFactories.slice().sort(keySort(f => f.name)).map(f =>
+            <span key={f.name}>{f.name}</span>
+          )}
+        </div>
 
         <h2>Items required</h2>
-        <div>
-          <span onClick={() => this.setState({ targetFactories: [], targetItems: {}, /* XXX */ })}>Clear selection</span>
-        </div>
-        {Object.values(this.state.targetItems).slice().sort((i,j) => i.material > j.material).map(item =>
+        {Object.values(this.state.targetItems).slice().sort(keySort(i => i.niceName)).map(item =>
           <ItemQuantityWithFactoryRecipes
             item={item}
             obtainWithRecipeInFactory={this.obtainWithRecipeInFactory.bind(this)}
