@@ -31,18 +31,15 @@ class RecipeTree {
           throw new Error(`upgradeRecipe already set for ${rcp.factory}: ${resultingFactory.upgradeRecipe}`);
         resultingFactory.upgradeRecipe = rcp;
       }
+      for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
+        rcpItem.type = bukkitNames[rcpItem.material];
+      }
       for (let rcpItem of Object.values(rcp.output || {})) {
         const itemKey = getItemKey(rcpItem);
         const oldItem = this.items[itemKey];
-        const defaultItem = {
-          name: rcpItem.name,
-          material: rcpItem.material,
-          durability: rcpItem.durability,
-          lore: rcpItem.lore,
-          recipeSources: [],
-        };
-        this.items[itemKey] = Object.assign(defaultItem, oldItem);
+        this.items[itemKey] = Object.assign({ recipeSources: [], }, rcpItem, oldItem);
         this.items[itemKey].recipeSources.push(this.recipes[rcpKey]);
+        rcpItem.recipeSources = this.items[itemKey].recipeSources;
       }
     }
   }
@@ -51,6 +48,8 @@ class RecipeTree {
     return new Promise(onRef => {
       ReactDOM.render(
         <App
+          factories={this.factories}
+          recipes={this.recipes}
           items={this.items}
           ref={r => r && onRef(r)}
         />,
