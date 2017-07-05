@@ -31,18 +31,6 @@ class RecipeTree {
           throw new Error(`upgradeRecipe already set for ${rcp.factory}: ${resultingFactory.upgradeRecipe}`);
         resultingFactory.upgradeRecipe = rcp;
       }
-      for (let rcpItem of Object.values(rcp.input || {})) {
-        const itemKey = getItemKey(rcpItem);
-        const oldItem = this.items[itemKey];
-        const defaultItem = {
-          name: rcpItem.name,
-          material: rcpItem.material,
-          durability: rcpItem.durability,
-          lore: rcpItem.lore,
-          recipeSources: [],
-        };
-        this.items[itemKey] = Object.assign(defaultItem, oldItem);
-      }
       for (let rcpItem of Object.values(rcp.output || {})) {
         const itemKey = getItemKey(rcpItem);
         const oldItem = this.items[itemKey];
