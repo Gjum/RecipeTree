@@ -1,4 +1,4 @@
-const getItemKey = item => `${item.material}:${item.durability}:${JSON.stringify(item.lore)}:${item.name}`
+const getItemKey = item => `${item.type}:${item.durability}:${item.lore ? item.lore[0] : ''}`
 
 const App = (function(){
 
