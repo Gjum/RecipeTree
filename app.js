@@ -47,7 +47,6 @@ const App = (function(){
     }
 
     obtainWithRecipeInFactory(item, recipe, factory) {
-      const targetItems = Object.assign({}, this.state.targetItems);
       // run recipe once
       for (let rcpItem of Object.values(recipe.input || {})) {
         this.addTargetItem(rcpItem);
@@ -56,13 +55,13 @@ const App = (function(){
         this.removeTargetItem(rcpItem);
       }
 
-      const newState = Object.assign({}, this.state, { targetItems });
+      const newState = this.state;
       if (!this.state.targetFactories.find(f => f.name === factory.name)) {
         newState.targetFactories = newState.targetFactories.slice();
         newState.targetFactories.push(factory);
       }
 
-      this.setState(this.state);
+      this.setState(newState);
     }
 
     addTargetItem(numItem) {
