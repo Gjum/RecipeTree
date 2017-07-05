@@ -4,7 +4,7 @@ const App = (function(){
 
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
-      id:{getItemKey(item)} name:{item.name} material:{item.material}
+      material:{item.material} {item.name && `name:${item.name} `}
       <ul className='quantities'>
         {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num =>
           <li key={num} className='selectQuantity'
@@ -22,7 +22,7 @@ const App = (function(){
 
   const ItemQuantityWithFactoryRecipes = ({item, obtainWithRecipeInFactory}) =>
     <div className='itemFromFactoryRecipe'>
-      num:{item.amount} material:{item.material}
+      num:{item.amount} material:{item.material} {item.name && `name:${item.name} `}
       {item.recipeSources &&
         <ul className='obtainMethods'>
           {item.recipeSources.map(recipe => recipe.inFactories.map(factory =>
