@@ -109,6 +109,12 @@ const App = (function(){
         this.state.itemsToAcquire = addItemToContainer(rcpItem, this.state.itemsToAcquire);
       }
       for (let rcpItem of Object.values(recipe.output || {})) {
+        const excessProduced = rcpItem.amount - this.state.itemsToAcquire[getItemKey(rcpItem)].amount;
+        if (excessProduced > 0) {
+          // more items were produced than we wanted, add the excess to obtainedItems
+          const excessItem = Object.assign({}, rcpItem, { amount: excessProduced, });
+          this.state.obtainedItems = addItemToContainer(excessItem, this.state.obtainedItems);
+        }
         this.state.itemsToAcquire = removeItemFromContainer(rcpItem, this.state.itemsToAcquire);
       }
 
