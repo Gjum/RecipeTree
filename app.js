@@ -21,6 +21,14 @@ const App = (function(){
       {factory.name}
     </span>
 
+  const VerboseItemStack = ({item}) =>
+    <span>
+      <ItemStack item={item} />
+      {item.niceName}
+      {item.name && <span className='itemCustomName'> {item.name}</span>}
+      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
+    </span>
+
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
       <span className='quantities'>
@@ -31,18 +39,12 @@ const App = (function(){
             {num}</span>
         )}
       </span>
-      <ItemStack item={item} />
-      {item.niceName}
-      {item.name && <span className='itemCustomName'> {item.name}</span>}
-      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
+      <VerboseItemStack item={item} />
     </div>
 
   const ItemQuantityWithFactoryRecipes = ({item, obtainWithRecipeInFactory}) =>
     <div className='itemFromFactoryRecipe'>
-      <ItemStack item={item} />
-      {item.niceName}
-      {item.name && <span className='itemCustomName'> {item.name}</span>}
-      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
+      <VerboseItemStack item={item} />
       {item.recipeSources &&
         <span className='obtainMethods'>
           {item.recipeSources.map(recipe => recipe.inFactories.map(factory =>
@@ -144,7 +146,7 @@ const App = (function(){
         <div>
           Items obtained:
           {Object.values(this.state.obtainedItems).slice().sort(keySort(i => i.niceName)).map(item =>
-            <ItemStack key={getItemKey(item)} item={item} />
+            <VerboseItemStack key={getItemKey(item)} item={item} />
           )}
         </div>
 
