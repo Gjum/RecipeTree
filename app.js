@@ -4,12 +4,16 @@ const keySort = f => (a,b) => f(a) > f(b) ? 1 : -1
 
 const App = (function(){
 
-  const ItemStack = ({item}) => {
+  const ItemStack = ({item, onClick}) => {
     let dura = item.durability || 0;
     if (item.type === 99 || item.type === 100) dura = 0; // only have first mushroom icon
     if (dura === -1) dura = 0;
     const imgUrl = `img/${item.type}-${dura}.png`;
-    return <div className='itemIcon' style={{backgroundImage:`url("${imgUrl}")`}}>
+    return <div
+      style={{backgroundImage:`url("${imgUrl}")`}}
+      className={'itemIcon' + (onClick ? ' clickableItem' : '')}
+      onClick={onClick}
+    >
       {item.amount || '999'}
     </div>
   }
@@ -32,14 +36,17 @@ const App = (function(){
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
       <span className='quantities'>
-        {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num =>
-          <span key={num} className='selectQuantity mcButton'
-            onClick={() => selectQuantity(Object.assign({}, item, { amount: num, }))}
-          >
-            {num}</span>
+        {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num => Object.assign({}, item, { amount: num, }))
+        .map(item =>
+          <ItemStack key={item.amount}
+            item={item}
+            onClick={() => selectQuantity(item)}
+          />
         )}
       </span>
-      <VerboseItemStack item={item} />
+      {item.niceName}
+      {item.name && <span className='itemCustomName'> {item.name}</span>}
+      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
     </div>
 
   const ItemQuantityWithFactoryRecipes = ({item, obtainWithRecipeInFactory}) =>
