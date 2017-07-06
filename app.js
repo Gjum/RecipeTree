@@ -117,7 +117,7 @@ const App = (function(){
         return <div>
           <img src="favicon.png" style={{float: 'left', marginRight: 8, height: '3em'}}/>
           <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
-          <div style={{opacity: .7}}>Calculate resources required to run a FactoryMod recipe</div>
+          <div style={{opacity: .7}}>Calculate the resources required to run FactoryMod recipes</div>
           <h2>Select what you want to obtain:</h2>
           {Object.values(this.props.factories).slice().sort(keySort(f => f.name)).map(factory =>
             <FactorySelector
