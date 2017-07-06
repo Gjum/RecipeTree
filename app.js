@@ -126,7 +126,7 @@ const App = (function(){
               key={factory.name}
             />
           )}
-          {Object.values(this.props.items).slice().sort(keySort(i => i.niceName)).map(item =>
+          {Object.values(this.props.items).filter(i => i.recipeSources.length).sort(keySort(i => i.niceName)).map(item =>
             <ItemQuantitySelector
               item={item}
               selectQuantity={numItem => this.addItemQuantity(numItem)}
