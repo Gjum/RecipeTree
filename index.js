@@ -44,13 +44,14 @@ class RecipeTree {
         rcpItem.niceName = itemData.name;
         if (rcpItem.durability === -1)
           rcpItem.niceName = 'Any ' + rcpItem.niceName;
-      }
-      for (let rcpItem of Object.values(rcp.output || {})) {
+
         const itemKey = getItemKey(rcpItem);
         const oldItem = this.items[itemKey];
         this.items[itemKey] = Object.assign({ recipeSources: [], }, rcpItem, oldItem);
-        this.items[itemKey].recipeSources.push(this.recipes[rcpKey]);
         rcpItem.recipeSources = this.items[itemKey].recipeSources;
+      }
+      for (let rcpItem of Object.values(rcp.output || {})) {
+        rcpItem.recipeSources.push(this.recipes[rcpKey]);
       }
     }
   }
