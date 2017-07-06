@@ -26,7 +26,7 @@ const App = (function(){
     </span>
 
   const VerboseItemStack = ({item}) =>
-    <span>
+    <span className='itemStackWithInfo'>
       <ItemStack item={item} />
       {item.niceName}
       {item.name && <span className='itemCustomName'> {item.name}</span>}
@@ -128,65 +128,83 @@ const App = (function(){
     }
 
     render() {
-      if (!Object.keys(this.state.itemsToAcquire).length) {
-        return <div>
-          <img src="favicon.png" style={{float: 'left', marginRight: 8, height: '3em'}}/>
-          <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
-          <div style={{opacity: .7}}>Calculate the resources required to run FactoryMod recipes</div>
-          <h2>Select what you want to obtain:</h2>
-          {Object.values(this.props.factories).slice().sort(keySort(f => f.name)).map(factory =>
-            <FactorySelector
-              factory={factory}
-              selectFactory={factory => this.makeFactory(factory)}
-              key={factory.name}
-            />
-          )}
-          {Object.values(this.props.items).filter(i => i.recipeSources.length).sort(keySort(i => i.niceName)).map(item =>
-            <ItemQuantitySelector
-              item={item}
-              selectQuantity={numItem => this.addItemQuantity(numItem)}
-              key={getItemKey(item)}
-            />
-          )}
-        </div>
-      }
       return <div>
-        <div>
-          <span className='mcButton' onClick={() => this.setState(this.resetState())}>
-            Reset</span>
+        <img src="favicon.png" style={{float: 'left', marginRight: 8, height: '3em'}}/>
+        <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
+        <div style={{opacity: .7}}>Calculate the resources required to run FactoryMod recipes</div>
+
+
+        <div className={'calculator ' + (Object.keys(this.state.itemsToAcquire).length ? 'calculatorUsed' : 'calculatorUnused')}>
+          <div className='toolbar'>
+            <span className='mcButton' onClick={() => this.setState(this.resetState())}>
+              Reset</span>
+          </div>
+
+          <div className="itemsObtained">
+            Items obtained:
+            <div className="itemsObtainedList">
+              {Object.values(this.state.obtainedItems).slice().sort(keySort(i => i.niceName)).map(item =>
+                <VerboseItemStack key={getItemKey(item)} item={item} />
+              )}
+            </div>
+          </div>
+
+          <div className="factoriesObtained">
+            Factories obtained:
+            <div className="factoriesObtainedList">
+              {this.state.obtainedFactories.slice().sort(keySort(f => f.name)).map(factory =>
+                <span key={factory.name} className='factoryName'> {factory.name}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="factoriesRequired">
+            Factories required:
+            <div className="factoriesRequiredList">
+              {this.state.factoriesToAcquire.slice().sort(keySort(f => f.name)).map(factory =>
+                <span key={factory.name} className='mcButton' key={factory.name}
+                  onClick={() => this.makeFactory(factory)}
+                >{factory.name}</span>
+              )}
+            </div>
+          </div>
+
+          <h2>Items required</h2>
+          <div className="itemsRequiredList">
+            {Object.values(this.state.itemsToAcquire).slice().sort(keySort(i => i.niceName)).map(item =>
+              <ItemQuantityWithFactoryRecipes
+                item={item}
+                obtainWithRecipeInFactory={this.obtainWithRecipeInFactory.bind(this)}
+                key={getItemKey(item)}
+              />
+            )}
+          </div>
+
+          <hr style={{marginTop: '2em'}} />
         </div>
 
-        <div>
-          Items obtained:
-          {Object.values(this.state.obtainedItems).slice().sort(keySort(i => i.niceName)).map(item =>
-            <VerboseItemStack key={getItemKey(item)} item={item} />
-          )}
+        <div className="selector">
+          <h2>Select what you want to obtain:</h2>
+          <div className="factorySelector">
+            {Object.values(this.props.factories).slice().sort(keySort(f => f.name)).map(factory =>
+              <FactorySelector
+                factory={factory}
+                selectFactory={factory => this.makeFactory(factory)}
+                key={factory.name}
+              />
+            )}
+          </div>
+          <div className="itemSelector">
+            {Object.values(this.props.items).filter(i => i.recipeSources.length).sort(keySort(i => i.niceName)).map(item =>
+              <ItemQuantitySelector
+                item={item}
+                selectQuantity={numItem => this.addItemQuantity(numItem)}
+                key={getItemKey(item)}
+              />
+            )}
+          </div>
         </div>
 
-        <div>
-          Factories obtained:
-          {this.state.obtainedFactories.slice().sort(keySort(f => f.name)).map(factory =>
-            <span key={factory.name} className='factoryName'> {factory.name}</span>
-          )}
-        </div>
-
-        <div>
-          Factories required:
-          {this.state.factoriesToAcquire.slice().sort(keySort(f => f.name)).map(factory =>
-            <span key={factory.name} className='mcButton' key={factory.name}
-              onClick={() => this.makeFactory(factory)}
-            >{factory.name}</span>
-          )}
-        </div>
-
-        <h2>Items required</h2>
-        {Object.values(this.state.itemsToAcquire).slice().sort(keySort(i => i.niceName)).map(item =>
-          <ItemQuantityWithFactoryRecipes
-            item={item}
-            obtainWithRecipeInFactory={this.obtainWithRecipeInFactory.bind(this)}
-            key={getItemKey(item)}
-          />
-        )}
       </div>
     }
   }

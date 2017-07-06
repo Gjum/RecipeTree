@@ -10,6 +10,22 @@ body {
     background-color: #c6c6c6;
 }
 
+.toolbar {
+    margin: 1.5em 0;
+}
+
+.calculatorUnused {
+    display: none;
+}
+
+.itemsObtainedList, .factoriesObtainedList, .factoriesRequiredList {
+    display: inline;
+}
+
+.itemsObtained, .factoriesObtained, .factoriesRequired, .factorySelector {
+    margin: .5em 0;
+}
+
 .factoryName, .recipeName {
     color: #44f;
 }
