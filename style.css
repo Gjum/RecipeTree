@@ -10,13 +10,20 @@ body {
     background-color: #c6c6c6;
 }
 
-.itemQuantitySelector .quantities li {
-    display: inline;
-    margin-left: 1em;
+.factoryName, .recipeName {
+    color: #44f;
 }
 
-.factoryList, .quantities {
-    display: inline;
+.mcButton .factoryName, .mcButton .recipeName {
+    color: #ccf;
+}
+
+.itemCustomName {
+    color: #088;
+}
+
+.itemCustomLore {
+    color: #808;
 }
 
 .mcButton {
@@ -31,11 +38,17 @@ body {
     cursor: pointer;
 }
 
-.mcButton:hover {
-    background-color: #c6c6c6;
+.mcButton:hover, .mcButton:active {
+    background-color: #8888cc;
+    color: #ffff88;
+}
+
+.mcButton:active {
+    border-color: #444 #fff #fff #444;
 }
 
 .itemIcon {
+    display: inline-block;
     line-height: 1em;
     padding-top: 18px;
     width: 32px;

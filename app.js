@@ -23,97 +23,94 @@ const App = (function(){
 
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
-      <ItemStack item={item} />
-      <div className='quantities'>
+      <span className='quantities'>
         {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num =>
           <span key={num} className='selectQuantity mcButton'
             onClick={() => selectQuantity(Object.assign({}, item, { amount: num, }))}
           >
             {num}</span>
         )}
-      </div>
-      {item.niceName} {item.name && `name:${item.name} `} {item.lore && `lore:${item.lore} `}
+      </span>
+      <ItemStack item={item} />
+      {item.niceName}
+      {item.name && <span className='itemCustomName'> {item.name}</span>}
+      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
     </div>
 
   const ItemQuantityWithFactoryRecipes = ({item, obtainWithRecipeInFactory}) =>
     <div className='itemFromFactoryRecipe'>
       <ItemStack item={item} />
-      {item.niceName} {item.name && `name:${item.name} `} {item.lore && `lore:${item.lore} `}
+      {item.niceName}
+      {item.name && <span className='itemCustomName'> {item.name}</span>}
+      {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
       {item.recipeSources &&
-        <div className='obtainMethods'>
+        <span className='obtainMethods'>
           {item.recipeSources.map(recipe => recipe.inFactories.map(factory =>
             <span key={recipe.key+factory.name} className='obtainItem mcButton'
               onClick={() => obtainWithRecipeInFactory(item, recipe, factory)}
             >
-              obtain from {factory.name} with recipe {recipe.name}</span>
+              run <span className='recipeName'>{recipe.name}</span>
+              {' '}
+              in <span className='factoryName'>{factory.name}</span>
+            </span>
           ))}
-        </div>
+        </span>
       }
     </div>
 
   class App extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {
+      this.resetState();
+    }
+
+    resetState() {
+      return this.state = {
         targetItems: {}, // TODO use an immutable Map
         targetFactories: [], // TODO use an immutable Set
+        haveItems: {}, // TODO use an immutable Map
         haveFactories: [], // TODO use an immutable Set
       };
     }
 
-    selectFactory(factory) {
+    // adds upgrade materials to targetItems,
+    // adds factory to haveFactories,
+    // removes factory from targetFactories.
+    makeFactory(factory) {
       const recipe = Object.values(this.props.recipes).find(r => r.factory === factory.name);
       for (let rcpItem of Object.values(recipe.input || {})) {
-        this.addTargetItem(rcpItem);
+        this.state.targetItems = addItemToContainer(rcpItem, this.state.targetItems);
       }
       if (!this.state.haveFactories.find(f => f.name === factory.name)) {
         this.state.haveFactories.push(factory);
       }
+      this.state.targetFactories = this.state.targetFactories.filter(f => f.name !== factory.name);
       this.setState(this.state);
     }
 
-    selectItemQuantity(numItem) {
-      this.setState({ targetItems: { [getItemKey(numItem)]: numItem, }, });
+    addItemQuantity(numItem) {
+      this.state.targetItems = addItemToContainer(numItem, this.state.targetItems);
+      this.state.haveItems = addItemToContainer(numItem, this.state.haveItems);
+      this.setState(this.state);
     }
 
     obtainWithRecipeInFactory(item, recipe, factory) {
       // run recipe once
       for (let rcpItem of Object.values(recipe.input || {})) {
-        this.addTargetItem(rcpItem);
+        this.state.targetItems = addItemToContainer(rcpItem, this.state.targetItems);
       }
       for (let rcpItem of Object.values(recipe.output || {})) {
-        this.removeTargetItem(rcpItem);
+        this.state.targetItems = removeItemFromContainer(rcpItem, this.state.targetItems);
       }
 
-      const newState = this.state;
-      if (!this.state.targetFactories.find(f => f.name === factory.name)) {
-        newState.targetFactories = newState.targetFactories.slice();
-        newState.targetFactories.push(factory);
+      const haveFactory = this.state.haveFactories.find(f => f.name === factory.name);
+      const isTargetFactory = this.state.targetFactories.find(f => f.name === factory.name);
+      if (!haveFactory && !isTargetFactory) {
+        this.state.targetFactories.push(factory);
+
       }
 
-      this.setState(newState);
-    }
-
-    addTargetItem(numItem) {
-      const newItem = Object.assign({}, numItem);
-      const targetItems = Object.assign({}, this.state.targetItems, { [getItemKey(newItem)]: newItem });
-      const oldItem = this.state.targetItems[getItemKey(newItem)];
-      if (oldItem) {
-        newItem.amount += oldItem.amount;
-      }
-      this.state.targetItems = targetItems;
-    }
-
-    removeTargetItem(numItem) {
-      const targetItems = Object.assign({}, this.state.targetItems);
-      const newItem = Object.assign({}, targetItems[getItemKey(numItem)]);
-      newItem.amount -= numItem.amount;
-      if (newItem.amount <= 0) {
-        delete targetItems[getItemKey(newItem)];
-      } else {
-        targetItems[getItemKey(newItem)] = newItem;
-      }
-      this.state.targetItems = targetItems;
+      this.setState(this.state);
     }
 
     render() {
@@ -126,24 +123,40 @@ const App = (function(){
           {Object.values(this.props.factories).slice().sort(keySort(f => f.name)).map(factory =>
             <FactorySelector
               factory={factory}
-              selectFactory={factory => this.selectFactory(factory)}
+              selectFactory={factory => this.makeFactory(factory)}
               key={factory.name}
             />
           )}
           {Object.values(this.props.items).slice().sort(keySort(i => i.niceName)).map(item =>
             <ItemQuantitySelector
               item={item}
-              selectQuantity={numItem => this.selectItemQuantity(numItem)}
+              selectQuantity={numItem => this.addItemQuantity(numItem)}
               key={getItemKey(item)}
             />
           )}
         </div>
       }
       return <div>
-        Factories required:
-        <div className='factoryList'>
-          {this.state.targetFactories.slice().sort(keySort(f => f.name)).map(f =>
-            <span key={f.name}>{f.name}</span>
+        <div>
+          Items obtained:
+          {Object.values(this.state.haveItems).slice().sort(keySort(i => i.niceName)).map(item =>
+            <ItemStack key={getItemKey(item)} item={item} />
+          )}
+        </div>
+
+        <div>
+          Factories obtained:
+          {this.state.haveFactories.slice().sort(keySort(f => f.name)).map(factory =>
+            <span key={factory.name} className='factoryName'> {factory.name}</span>
+          )}
+        </div>
+
+        <div>
+          Factories required:
+          {this.state.targetFactories.slice().sort(keySort(f => f.name)).map(factory =>
+            <span key={factory.name} className='mcButton' key={factory.name}
+              onClick={() => this.makeFactory(factory)}
+            >{factory.name}</span>
           )}
         </div>
 
@@ -157,6 +170,28 @@ const App = (function(){
         )}
       </div>
     }
+  }
+
+  function addItemToContainer(numItem, container) {
+    const newItem = Object.assign({}, numItem);
+    const newContainer = Object.assign({}, container, { [getItemKey(newItem)]: newItem });
+    const oldItem = container[getItemKey(newItem)];
+    if (oldItem) {
+      newItem.amount += oldItem.amount;
+    }
+    return newContainer;
+  }
+
+  function removeItemFromContainer(numItem, container) {
+    const newContainer = Object.assign({}, container);
+    const newItem = Object.assign({}, newContainer[getItemKey(numItem)]);
+    newItem.amount -= numItem.amount;
+    if (newItem.amount <= 0) {
+      delete newContainer[getItemKey(newItem)];
+    } else {
+      newContainer[getItemKey(newItem)] = newItem;
+    }
+    return newContainer;
   }
 
   return App;
