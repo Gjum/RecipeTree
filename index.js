@@ -32,7 +32,12 @@ class RecipeTree {
         resultingFactory.upgradeRecipe = rcp;
       }
       for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
+        // HACK "fix" inconsistency
+        if (rcpItem.lore && rcpItem.lore[0].endsWith(' for a bastion'))
+          rcpItem.lore[0] = rcpItem.lore[0].split(' for a bastion')[0] + ' for bastion';
+
         rcpItem.type = bukkitNames[rcpItem.material];
+
         const meta = Math.max(0, rcpItem.durability || 0); // some are -1, some are undefined
         const itemData = itemNames.find(i => i.type === rcpItem.type && i.meta === meta)
           || itemNames.find(i => i.type === rcpItem.type);
