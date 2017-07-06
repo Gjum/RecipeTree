@@ -137,6 +137,11 @@ const App = (function(){
       }
       return <div>
         <div>
+          <span className='mcButton' onClick={() => this.setState(this.resetState())}>
+            Reset</span>
+        </div>
+
+        <div>
           Items obtained:
           {Object.values(this.state.obtainedItems).slice().sort(keySort(i => i.niceName)).map(item =>
             <ItemStack key={getItemKey(item)} item={item} />
