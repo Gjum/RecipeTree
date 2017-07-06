@@ -66,55 +66,54 @@ const App = (function(){
 
     resetState() {
       return this.state = {
-        targetItems: {}, // TODO use an immutable Map
-        targetFactories: [], // TODO use an immutable Set
-        haveItems: {}, // TODO use an immutable Map
-        haveFactories: [], // TODO use an immutable Set
+        itemsToAcquire: {}, // TODO use an immutable Map
+        factoriesToAcquire: [], // TODO use an immutable Set
+        obtainedItems: {}, // TODO use an immutable Map
+        obtainedFactories: [], // TODO use an immutable Set
       };
     }
 
-    // adds upgrade materials to targetItems,
-    // adds factory to haveFactories,
-    // removes factory from targetFactories.
+    // adds upgrade materials to itemsToAcquire,
+    // adds factory to obtainedFactories,
+    // removes factory from factoriesToAcquire.
     makeFactory(factory) {
       const recipe = Object.values(this.props.recipes).find(r => r.factory === factory.name);
       for (let rcpItem of Object.values(recipe.input || {})) {
-        this.state.targetItems = addItemToContainer(rcpItem, this.state.targetItems);
+        this.state.itemsToAcquire = addItemToContainer(rcpItem, this.state.itemsToAcquire);
       }
-      if (!this.state.haveFactories.find(f => f.name === factory.name)) {
-        this.state.haveFactories.push(factory);
+      if (!this.state.obtainedFactories.find(f => f.name === factory.name)) {
+        this.state.obtainedFactories.push(factory);
       }
-      this.state.targetFactories = this.state.targetFactories.filter(f => f.name !== factory.name);
+      this.state.factoriesToAcquire = this.state.factoriesToAcquire.filter(f => f.name !== factory.name);
       this.setState(this.state);
     }
 
     addItemQuantity(numItem) {
-      this.state.targetItems = addItemToContainer(numItem, this.state.targetItems);
-      this.state.haveItems = addItemToContainer(numItem, this.state.haveItems);
+      this.state.itemsToAcquire = addItemToContainer(numItem, this.state.itemsToAcquire);
+      this.state.obtainedItems = addItemToContainer(numItem, this.state.obtainedItems);
       this.setState(this.state);
     }
 
     obtainWithRecipeInFactory(item, recipe, factory) {
       // run recipe once
       for (let rcpItem of Object.values(recipe.input || {})) {
-        this.state.targetItems = addItemToContainer(rcpItem, this.state.targetItems);
+        this.state.itemsToAcquire = addItemToContainer(rcpItem, this.state.itemsToAcquire);
       }
       for (let rcpItem of Object.values(recipe.output || {})) {
-        this.state.targetItems = removeItemFromContainer(rcpItem, this.state.targetItems);
+        this.state.itemsToAcquire = removeItemFromContainer(rcpItem, this.state.itemsToAcquire);
       }
 
-      const haveFactory = this.state.haveFactories.find(f => f.name === factory.name);
-      const isTargetFactory = this.state.targetFactories.find(f => f.name === factory.name);
+      const haveFactory = this.state.obtainedFactories.find(f => f.name === factory.name);
+      const isTargetFactory = this.state.factoriesToAcquire.find(f => f.name === factory.name);
       if (!haveFactory && !isTargetFactory) {
-        this.state.targetFactories.push(factory);
-
+        this.state.factoriesToAcquire.push(factory);
       }
 
       this.setState(this.state);
     }
 
     render() {
-      if (!Object.keys(this.state.targetItems).length) {
+      if (!Object.keys(this.state.itemsToAcquire).length) {
         return <div>
           <img src="favicon.png" style={{float: 'left', marginRight: 8, height: '3em'}}/>
           <div style={{fontWeight: 'bold', fontSize: '1.5em'}}>RecipeTree</div>
@@ -139,21 +138,21 @@ const App = (function(){
       return <div>
         <div>
           Items obtained:
-          {Object.values(this.state.haveItems).slice().sort(keySort(i => i.niceName)).map(item =>
+          {Object.values(this.state.obtainedItems).slice().sort(keySort(i => i.niceName)).map(item =>
             <ItemStack key={getItemKey(item)} item={item} />
           )}
         </div>
 
         <div>
           Factories obtained:
-          {this.state.haveFactories.slice().sort(keySort(f => f.name)).map(factory =>
+          {this.state.obtainedFactories.slice().sort(keySort(f => f.name)).map(factory =>
             <span key={factory.name} className='factoryName'> {factory.name}</span>
           )}
         </div>
 
         <div>
           Factories required:
-          {this.state.targetFactories.slice().sort(keySort(f => f.name)).map(factory =>
+          {this.state.factoriesToAcquire.slice().sort(keySort(f => f.name)).map(factory =>
             <span key={factory.name} className='mcButton' key={factory.name}
               onClick={() => this.makeFactory(factory)}
             >{factory.name}</span>
@@ -161,7 +160,7 @@ const App = (function(){
         </div>
 
         <h2>Items required</h2>
-        {Object.values(this.state.targetItems).slice().sort(keySort(i => i.niceName)).map(item =>
+        {Object.values(this.state.itemsToAcquire).slice().sort(keySort(i => i.niceName)).map(item =>
           <ItemQuantityWithFactoryRecipes
             item={item}
             obtainWithRecipeInFactory={this.obtainWithRecipeInFactory.bind(this)}
