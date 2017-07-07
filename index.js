@@ -17,6 +17,11 @@ class RecipeTree {
       const factory = this.factories[factoryKey];
       for (let rcpKey of factory.recipes) {
         const recipe = this.recipes[rcpKey];
+        if (!recipe) {
+          console.error('Undefined recipe', rcpKey, 'in', factory);
+          delete factory.recipes[rcpKey];
+          continue;
+        }
         recipe.key = rcpKey;
         recipe.inFactories = recipe.inFactories || [];
         recipe.inFactories.push(factory);
