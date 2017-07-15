@@ -28,7 +28,7 @@ const App = (function(){
   const VerboseItemStack = ({item}) =>
     <span className='itemStackWithInfo'>
       <ItemStack item={item} />
-      {item.niceName}
+      {item.niceName || item.material}
       {item.name && <span className='itemCustomName'> {item.name}</span>}
       {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
     </span>
@@ -44,7 +44,7 @@ const App = (function(){
           />
         )}
       </span>
-      {item.niceName}
+      {item.niceName || item.material}
       {item.name && <span className='itemCustomName'> {item.name}</span>}
       {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
     </div>
