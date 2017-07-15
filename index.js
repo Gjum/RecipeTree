@@ -47,6 +47,10 @@ class RecipeTree {
         const meta = Math.max(0, rcpItem.durability || 0); // some are -1, some are undefined
         const itemData = itemNames.find(i => i.type === rcpItem.type && i.meta === meta)
           || itemNames.find(i => i.type === rcpItem.type);
+        if (!itemData) {
+          console.error('Unknown item type/meta', rcpItem, 'in recipe', rcp);
+          continue;
+        }
         rcpItem.niceName = itemData.name;
         if (rcpItem.durability === -1)
           rcpItem.niceName = 'Any ' + rcpItem.niceName;
