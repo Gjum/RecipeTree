@@ -28,8 +28,8 @@ class RecipeTree {
       }
     }
 
-    for (let rcpKey in rcpSrc.recipes) {
-      const rcp = rcpSrc.recipes[rcpKey];
+    for (let rcpKey in this.recipes) {
+      const rcp = this.recipes[rcpKey];
       if (rcp.type === 'UPGRADE') {
         const resultingFactory = Object.values(this.factories).find(f => f.name === rcp.factory);
         if (resultingFactory.upgradeRecipe)
