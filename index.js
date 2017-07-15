@@ -32,9 +32,11 @@ class RecipeTree {
       const rcp = this.recipes[rcpKey];
       if (rcp.type === 'UPGRADE') {
         const resultingFactory = Object.values(this.factories).find(f => f.name === rcp.factory);
-        if (resultingFactory.upgradeRecipe)
-          throw new Error(`upgradeRecipe already set for ${rcp.factory}: ${resultingFactory.upgradeRecipe}`);
-        resultingFactory.upgradeRecipe = rcp;
+        if (resultingFactory.upgradeRecipe) {
+          console.error(`upgradeRecipe already set for ${rcp.factory}:`, resultingFactory.upgradeRecipe);
+        } else {
+          resultingFactory.upgradeRecipe = rcp;
+        }
       }
       for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
         rcpItem.type = bukkitNames[rcpItem.material];
