@@ -28,6 +28,7 @@ const App = (function(){
   const VerboseItemStack = ({item}) =>
     <span className='itemStackWithInfo'>
       <ItemStack item={item} />
+      {' '}
       {item.niceName || item.material}
       {item.name && <span className='itemCustomName'> {item.name}</span>}
       {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
@@ -44,6 +45,7 @@ const App = (function(){
           />
         )}
       </span>
+      {' '}
       {item.niceName || item.material}
       {item.name && <span className='itemCustomName'> {item.name}</span>}
       {item.lore && <span className='itemCustomLore'> {item.lore}</span>}
@@ -58,6 +60,7 @@ const App = (function(){
             <span key={recipe.key+factory.name} className='obtainItem mcButton'
               onClick={() => obtainWithRecipeInFactory(item, recipe, factory)}
             >
+              {' '}
               run <span className='recipeName'>{recipe.name}</span>
               {' '}
               in <span className='factoryName'>{factory.name}</span>
