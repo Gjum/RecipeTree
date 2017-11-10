@@ -51,6 +51,8 @@ class RecipeTree {
       for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
         rcpItem.type = bukkitNames[rcpItem.material];
         if (!rcpItem.type) {
+          if (rcpItem.material === 'REDSTONE_LAMP') rcpItem.type = bukkitNames['REDSTONE_LAMP_OFF'];
+          else
           throw new Error(`Unknown material ${rcpItem.material} in recipe item ${stringifyShallow(rcpItem)} in recipe ${stringifyShallow(rcp)}`);
         }
         const meta = Math.max(0, rcpItem.durability || 0); // some are -1, some are undefined
