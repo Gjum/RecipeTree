@@ -1,3 +1,13 @@
+function stringifyShallow(obj) {
+  if (typeof obj !== "object") {
+    return obj
+  }
+  if (Array.isArray(obj)) {
+    return JSON.stringify(obj.map(stringifyShallow))
+  }
+  return '{' + Object.keys(obj).map(k => `"${k}": ${obj[k]}`).join(', ') + '}'
+}
+
 class RecipeTree {
   constructor() {
     this.rcpSources = [];
@@ -18,7 +28,7 @@ class RecipeTree {
       for (let rcpKey of factory.recipes) {
         const recipe = this.recipes[rcpKey];
         if (!recipe) {
-          console.error('Undefined recipe', rcpKey, 'in', factory);
+          console.error(`Undefined recipe ${rcpKey} in ${stringifyShallow(factory)}`);
           delete factory.recipes[rcpKey];
           continue;
         }
@@ -33,7 +43,7 @@ class RecipeTree {
       if (rcp.type === 'UPGRADE') {
         const resultingFactory = Object.values(this.factories).find(f => f.name === rcp.factory);
         if (resultingFactory.upgradeRecipe) {
-          console.error(`upgradeRecipe already set for ${rcp.factory}:`, resultingFactory.upgradeRecipe);
+          throw new Error(`upgradeRecipe already set for ${stringifyShallow(rcp.factory)}: ${stringifyShallow(resultingFactory.upgradeRecipe)}`);
         } else {
           resultingFactory.upgradeRecipe = rcp;
         }
@@ -41,15 +51,13 @@ class RecipeTree {
       for (let rcpItem of Object.values(rcp.input || {}).concat(Object.values(rcp.output || {}))) {
         rcpItem.type = bukkitNames[rcpItem.material];
         if (!rcpItem.type) {
-          console.error('Unknown material', rcpItem.material, 'in recipe item', rcpItem, 'in recipe', rcp);
-          continue;
+          throw new Error(`Unknown material ${rcpItem.material} in recipe item ${stringifyShallow(rcpItem)} in recipe ${stringifyShallow(rcp)}`);
         }
         const meta = Math.max(0, rcpItem.durability || 0); // some are -1, some are undefined
         const itemData = itemNames.find(i => i.type === rcpItem.type && i.meta === meta)
           || itemNames.find(i => i.type === rcpItem.type);
         if (!itemData) {
-          console.error('Unknown item type/meta', rcpItem, 'in recipe', rcp);
-          continue;
+          throw new Error(`Unknown item type/meta ${rcpItem} in recipe ${stringifyShallow(rcp)}`);
         }
         rcpItem.niceName = itemData.name;
         if (rcpItem.durability === -1)
