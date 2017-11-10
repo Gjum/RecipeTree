@@ -33,7 +33,8 @@
       })
       .catch(e => {
         console.error(e);
-        rootElement.innerHTML = `<pre>Error encountered while loading:\n\n${e}</pre>`;
+        const redditMsgLink = encodeURI(`https://www.reddit.com/message/compose?to=Gjum&subject=RecipeTree+broke&message=${e.stack}`);
+        rootElement.innerHTML = `Error encountered while loading<p><a href="${redditMsgLink}">Report this error so I can fix it</a><p>${e}`;
       })
     </script>
   </body>
