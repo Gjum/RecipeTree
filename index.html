@@ -21,7 +21,7 @@
     <script type="text/babel">
       const rootElement = document.getElementById('root');
       rootElement.innerHTML = "Downloading current recipes config...";
-      const urlCivClassic = 'https://github.com/CivClassic/Configs/raw/630d05b536d09730c2ce6a60811cde46cabb6381/FactoryMod/config.yml';
+      const urlCivClassic = 'https://raw.githubusercontent.com/CivClassic/Configs/630d05b536d09730c2ce6a60811cde46cabb6381/FactoryMod/config.yml';
       RecipeTree.getUrl(urlCivClassic)
       .then(data => jsyaml.safeLoad(data, { json: true, filename: "configCivclassic.yml", }))
       .then(rcp => {
