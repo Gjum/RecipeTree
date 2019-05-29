@@ -37,7 +37,7 @@ const App = (function(){
   const ItemQuantitySelector = ({item, selectQuantity}) =>
     <div className='itemQuantitySelector'>
       <span className='quantities'>
-        {[1, 8, 16, 32, 48, 64, 96, 128, 256].map(num => Object.assign({}, item, { amount: num, }))
+        {[1, 8, 32, 64, 128, 3456, 4096].map(num => Object.assign({}, item, { amount: num, }))
         .map(item =>
           <ItemStack key={item.amount}
             item={item}
